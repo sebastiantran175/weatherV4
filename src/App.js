@@ -13,6 +13,7 @@ import {
 import "antd/dist/antd.css";
 
 
+
 function App() {
   const [searchInput, setSearchInput] = useState("");
   const [location, setLocation] = useState({})
@@ -41,12 +42,6 @@ function App() {
     axios.get(dataURL).then((response) => {
       setData(response.data)
       console.log(response.data)
-      console.log(response.data.DailyForecasts)
-      console.log(response.data.DailyForecasts[0].Date)
-      console.log(response.data.DailyForecasts[1].Date)
-      console.log(response.data.DailyForecasts[2].Date)
-      console.log(response.data.DailyForecasts[3].Date)
-      console.log(response.data.DailyForecasts[4].Date)
     })
   }
 
@@ -72,11 +67,28 @@ function App() {
         <>
           <Row>
             <Col span={3}>
-              <Card size="small" title="Today"  style={{width: 200}}>
+              <Card
+                  hoverable title="Today"
+                  style={{ width: 240 }}
+                  cover={<img src='/icon/7.svg' />}
+              >
+                {/*<Meta title="Europe Street beat" description="www.instagram.com" />*/}
                 {data.DailyForecasts? <p>{data.DailyForecasts[0].Day.IconPhrase}</p> :null}
-                {data.DailyForecasts? <p>{data.DailyForecasts[0].Temperature.Maximum.Value}</p> :null}
-                {data.DailyForecasts? <p>{data.DailyForecasts[0].Temperature.Minimum.Value}</p> :null}
-            </Card>
+                {data.DailyForecasts? <p>High {data.DailyForecasts[0].Temperature.Maximum.Value} C</p> :null}
+                {data.DailyForecasts? <p>Low {data.DailyForecasts[0].Temperature.Minimum.Value} C</p> :null}
+              </Card>
+            </Col>
+            <Col span={3}>
+              <Card
+                  hoverable title="Tomorrow"
+                  style={{ width: 240 }}
+                  cover={<img src='/icon/6.svg' />}
+              >
+                {/*<Meta title="Europe Street beat" description="www.instagram.com" />*/}
+                {data.DailyForecasts? <p>{data.DailyForecasts[1].Day.IconPhrase}</p> :null}
+                {data.DailyForecasts? <p>High {data.DailyForecasts[1].Temperature.Maximum.Value} C</p> :null}
+                {data.DailyForecasts? <p>Low {data.DailyForecasts[1].Temperature.Minimum.Value} C</p> :null}
+              </Card>
             </Col>
           </Row>
         </>
