@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import axios from 'axios';
 import config from '../config.json'
-import {Card, Row, Col, Checkbox, Input, Space} from 'antd'
+import {Card, Row, Col, Checkbox, Input, Space,  Radio } from 'antd'
 import "antd/dist/antd.css";
 import "./WeatherWidget.css"
 
@@ -31,9 +31,9 @@ function WeatherWidget() {
     }, [location, metricSelection])
 
 
-    const onChange = () => {
-        setMetricSelection(!metricSelection)
-    };
+    // const onChange = () => {
+    //     setMetricSelection(!metricSelection)
+    // };
 
     const onSearch = (value) => {
         let locationURL = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${config.api_key}&q=${value}`
@@ -43,10 +43,11 @@ function WeatherWidget() {
             }).catch((error) => {
             console.log(error.toJSON)
         })
-
-
-
     }
+
+    const onChangeRadio = (e) => {
+        setMetricSelection(e.target.value);
+    };
 
     return (
         <div className="WeatherWidget">
@@ -54,30 +55,36 @@ function WeatherWidget() {
 
             <Space direction="vertical" align="start">
                 <Search
-                    placeholder="input search text"
+                    placeholder="Location"
                     allowClear
                     enterButton="Search"
                     size="large"
                     onSearch={onSearch}
                 />
-                <Checkbox onChange={onChange}>Use Imperial Units</Checkbox>
+                {/*<Checkbox onChange={onChange}>Use Imperial Units</Checkbox>*/}
+
+                <Radio.Group onChange={onChangeRadio} value={metricSelection}>
+                    <Radio value={true}><p className="Selection">°C</p></Radio>
+                    <Radio value={false}><p className="Selection">°F</p></Radio>
+                </Radio.Group>
+
             </Space>
 
 
 
             <Row gutter={{xs: 16, sm: 32, md: 48, lg: 64}} align="start">
                 <Col align="start">
-                    <div
-                        className="City">{location[0].LocalizedName ? <>{location[0].LocalizedName}</> : <>Melbourne</>} </div>
+                    <p
+                        className="City">{location[0].LocalizedName ? <>{location[0].LocalizedName}</> : <>Melbourne</>} </p>
                 </Col>
                 <Col xs={2} sm={4} md={6} lg={8} xl={10} align="start">
-                    <p>{liveData[0] ? <div>{liveData[0].LocalObservationDateTime.substring(0, 10)}</div> :
-                        <div></div>}</p>
-                    <p>{liveData[0] ? <div>{liveData[0].LocalObservationDateTime.substring(11, 16)}</div> :
-                        <div></div>}</p>
-                    <p>{liveData[0] ? <div>Humidity: {liveData[0].RelativeHumidity}</div> : null}</p>
-                    <p>{liveData[0] ? <div>Wind Direction: {liveData[0].Wind.Direction.English}</div> :
-                        <div></div>}</p>
+                    <p>{liveData[0] ? <p>{liveData[0].LocalObservationDateTime.substring(0, 10)}</p> :
+                        <p></p>}</p>
+                    <p>{liveData[0] ? <p>{liveData[0].LocalObservationDateTime.substring(11, 16)}</p> :
+                        <p></p>}</p>
+                    <p>{liveData[0] ? <p>Humidity: {liveData[0].RelativeHumidity}</p> : null}</p>
+                    <p>{liveData[0] ? <p>Wind Direction: {liveData[0].Wind.Direction.English}</p> :
+                        <p></p>}</p>
                 </Col>
             </Row>
 
