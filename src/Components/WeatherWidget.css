@@ -28,6 +28,10 @@
     color: #61dafb;
 }
 
+.Selection{
+    font-size:  18px;
+    text-align: center;
+}
 
 
 .City{
@@ -35,6 +39,3 @@
 
 }
 
-.Country{
-    font-size: medium;
-}
