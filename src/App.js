@@ -7,14 +7,13 @@ import "antd/dist/antd.css";
 
 
 function App() {
-    // const [searchInput, setSearchInput] = useState("");
     const [location, setLocation] = useState([{Key: 26216}])
     const [metricSelection, setMetricSelection] = useState(true)
     const [data, setData] = useState({})
     const [liveData, setLiveData] = useState({})
     const {Search} = Input;
 
-    let locationURL = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${config.api_key}&q=Melbourne`
+
 
     useEffect(() => {
         let dataURL = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location[0].Key}?details=false&apikey=${config.api_key}&metric=${metricSelection}`
@@ -22,7 +21,7 @@ function App() {
             setData(response.data)
         })
 
-        let liveURL = `http://dataservice.accuweather.com/currentconditions/v1/${location[0].Key}?details=false&apikey=${config.api_key}&metric=${metricSelection}`
+        let liveURL = `http://dataservice.accuweather.com/currentconditions/v1/${location[0].Key}?details=true&apikey=${config.api_key}&metric=${metricSelection}`
         axios.get(liveURL).then((response) => {
             setLiveData(response.data)
         })
@@ -47,21 +46,9 @@ function App() {
 
     return (
         <div className="App">
+            <div>Weather Application</div>
 
-
-            {/*<Space direction="vertical">*/}
-            {/*    <Search*/}
-            {/*        placeholder="input search text"*/}
-            {/*        allowClear*/}
-            {/*        enterButton="Search"*/}
-            {/*        size="large"*/}
-            {/*        onSearch={onSearch}*/}
-            {/*    />*/}
-            {/*</Space>*/}
-
-            {/*<div>{location[0].LocalizedName ? <p>{location[0].LocalizedName}</p> : null} </div>*/}
-            <div>Weather Application </div>
-            <Space direction="vertical">
+            <Space direction="vertical" align="start">
                 <Search
                     placeholder="input search text"
                     allowClear
@@ -71,39 +58,81 @@ function App() {
                 />
                 <Checkbox onChange={onChange}>Use Imperial Units</Checkbox>
             </Space>
-            <>
-                <Row>
-                    <Col>
-                        {/*<div>{location[0].LocalizedName ? <p>{location[0].LocalizedName}</p> : null} </div>*/}
-                        {/*<Card size="small" title=  {liveData[0].WeatherIcon ? location[0].LocalizedName : null}  bordered={false} style={{width: 300}}*/}
-                        {/*      cover={liveData[0].WeatherIcon?*/}
-                        {/*    <img src={`/icon/${liveData[0].WeatherIcon}.svg`}/>*/}
-                        {/*</Card>*/}
-                    </Col>
-                    <Col xs={2} sm={4} md={6} lg={8} xl={10}>
-                        {/*{liveData[0].WeatherIcon ? <p>{liveData[0].WeatherText}</p> : null}*/}
-                        {/*{liveData[0].WeatherIcon ? <p>{liveData[0].LocalObservationDateTime}</p> : null}*/}
-                    </Col>
-                </Row>
-            </>
+
+
+            <Row gutter={{xs: 16, sm: 32, md: 48, lg: 64}} align="start">
+                <Col align="start">
+                    <div
+                        className="City">{location[0].LocalizedName ? <>{location[0].LocalizedName}</> : <></>} </div>
+                </Col>
+                <Col xs={2} sm={4} md={6} lg={8} xl={10} align="start">
+                    <div>{liveData[0] ? <div>{liveData[0].LocalObservationDateTime.substring(0, 10)}</div> : <div></div>}</div>
+                    <div>{liveData[0] ? <div>{liveData[0].LocalObservationDateTime.substring(11, 16)}</div> : <div></div>}</div>
+                    <div>{liveData[0] ? <div>Humidity: {liveData[0].RelativeHumidity}</div> : null}</div>
+                    <div>{liveData[0] ? <div>Wind Direction: {liveData[0].Wind.Direction.English}</div> : <div></div>}</div>
+                </Col>
+            </Row>
 
 
             <>
-                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                    <Col xs={2} sm={4} md={6} lg={8} >
-                        <Card size="small" bordered={false} title="Today" style={{width: 150}} cover={data.DailyForecasts ?
-                            <img src={`/icon/${data.DailyForecasts[0].Day.Icon}.svg`}/> : null}>
-                            {data.DailyForecasts ? <p>{data.DailyForecasts[0].Day.IconPhrase}</p> : null}
-                            {data.DailyForecasts ? <p>High {data.DailyForecasts[0].Temperature.Maximum.Value}°{metricSelection? <>C</>:<>F</>}</p> : null}
-                            {data.DailyForecasts ? <p>Low {data.DailyForecasts[0].Temperature.Minimum.Value}°{metricSelection? <>C</>:<>F</>}</p> : null}
+                <Row gutter={{xs: 8, sm: 16, md: 24, lg: 32}}>
+                    <Col >
+                        <Card size="small" bordered={false} title="Today" style={{width: 150}}
+                              cover={data.DailyForecasts ?
+                                  <img src={`/icon/${data.DailyForecasts[0].Day.Icon}.svg`}/> : null}>
+                            {data.DailyForecasts ? <div>{data.DailyForecasts[0].Day.IconPhrase}</div> : null}
+                            {data.DailyForecasts ?
+                                <div>High {data.DailyForecasts[0].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</div> : null}
+                            {data.DailyForecasts ?
+                                <div>Low {data.DailyForecasts[0].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</div> : null}
                         </Card>
                     </Col>
-                    <Col xs={2} sm={4} md={6} lg={8} >
-                        <Card size="small" bordered={false} title="Tomorrow" style={{width: 150}} cover={data.DailyForecasts ?
-                            <img src={`/icon/${data.DailyForecasts[1].Day.Icon}.svg`}/> : null}>
-                            {data.DailyForecasts ? <p>{data.DailyForecasts[1].Day.IconPhrase}</p> : null}
-                            {data.DailyForecasts ? <p>High {data.DailyForecasts[1].Temperature.Maximum.Value}°{metricSelection? <>C</>:<>F</>}</p> : null}
-                            {data.DailyForecasts ? <p>Low {data.DailyForecasts[1].Temperature.Minimum.Value}°{metricSelection? <>C</>:<>F</>}</p> : null}
+
+                    <Col >
+                        <Card size="small" bordered={false} title="Tomorrow" style={{width: 150}}
+                              cover={data.DailyForecasts ?
+                                  <img src={`/icon/${data.DailyForecasts[1].Day.Icon}.svg`}/> : null}>
+                            {data.DailyForecasts ? <div>{data.DailyForecasts[1].Day.IconPhrase}</div> : null}
+                            {data.DailyForecasts ?
+                                <div>High {data.DailyForecasts[1].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</div> : null}
+                            {data.DailyForecasts ?
+                                <div>Low {data.DailyForecasts[1].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</div> : null}
+                        </Card>
+                    </Col>
+
+                    <Col>
+                        <Card size="small" bordered={false} title={data.DailyForecasts? data.DailyForecasts[2].Date.substring(5,10): ""} style={{width: 150}}
+                              cover={data.DailyForecasts ?
+                                  <img src={`/icon/${data.DailyForecasts[2].Day.Icon}.svg`}/> : null}>
+                            {data.DailyForecasts ? <div>{data.DailyForecasts[2].Day.IconPhrase}</div> : null}
+                            {data.DailyForecasts ?
+                                <div>High {data.DailyForecasts[2].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</div> : null}
+                            {data.DailyForecasts ?
+                                <div>Low {data.DailyForecasts[2].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</div> : null}
+                        </Card>
+                    </Col>
+
+                    <Col>
+                        <Card size="small" bordered={false} title={data.DailyForecasts? data.DailyForecasts[3].Date.substring(5,10): ""} style={{width: 150}}
+                              cover={data.DailyForecasts ?
+                                  <img src={`/icon/${data.DailyForecasts[3].Day.Icon}.svg`}/> : null}>
+                            {data.DailyForecasts ? <div>{data.DailyForecasts[3].Day.IconPhrase}</div> : null}
+                            {data.DailyForecasts ?
+                                <div>High {data.DailyForecasts[3].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</div> : null}
+                            {data.DailyForecasts ?
+                                <div>Low {data.DailyForecasts[3].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</div> : null}
+                        </Card>
+                    </Col>
+
+                    <Col >
+                        <Card size="small" bordered={false} title={data.DailyForecasts? data.DailyForecasts[4].Date.substring(5,10): ""} style={{width: 150}}
+                              cover={data.DailyForecasts ?
+                                  <img src={`/icon/${data.DailyForecasts[4].Day.Icon}.svg`}/> : null}>
+                            {data.DailyForecasts ? <div>{data.DailyForecasts[4].Day.IconPhrase}</div> : null}
+                            {data.DailyForecasts ?
+                                <div>High {data.DailyForecasts[4].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</div> : null}
+                            {data.DailyForecasts ?
+                                <div>Low {data.DailyForecasts[4].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</div> : null}
                         </Card>
                     </Col>
                 </Row>
