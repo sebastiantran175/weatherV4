@@ -6,6 +6,9 @@ if the page is not refreshing, please change the api_key value to other keys
 ## Available Scripts
 
 In the project directory, you can run:
+### `npm install`
+Install the dependencies
+
 ### `npm start`
 To start the app 
 
@@ -17,5 +20,8 @@ Refer to /src/docs files
 
 
 
-## Search Functionality
-Typos are ranked based on closeness to actual cities name thanks to AccuWeather API, so Adelaid will return Adelaide, for example.
+## Accessibility Features
+<ul>
+<li>Typos are ranked based on closeness to actual cities name thanks to AccuWeather API, so Adelaid will return Adelaide, for example.
+<li>The whole widget can be navigated with tab (and arrow key for unit selection)
+<li>Each icon is given and alt value of relevant weather condition </ul>

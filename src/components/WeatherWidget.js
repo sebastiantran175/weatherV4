@@ -1,11 +1,11 @@
 import {useEffect, useState} from "react";
 
 import {Card, Row, Col, Input, Space, Radio} from 'antd'
-import "antd/dist/antd.css";
+import "antd/dist/antd.min.css"
 import "./WeatherWidget.css"
 
 import {getClosestLocation, get5daysData, getLiveData} from "../utils/request";
-import {convertDate} from "../utils/dateConversion";
+import {convertDate, displayTemp} from "../utils/UnitConversions";
 
 
 function WeatherWidget() {
@@ -18,7 +18,7 @@ function WeatherWidget() {
 
     const fetch5DaysData = async () => {
         try {
-            const res = await get5daysData(location[0].Key, metricSelection);
+            const res = await get5daysData(location[0].Key);
             setData(res.data)
         } catch (error) {
             console.log(error)
@@ -28,7 +28,7 @@ function WeatherWidget() {
 
     const fetchLiveData = async () => {
         try {
-            const res = await getLiveData(location[0].Key, metricSelection);
+            const res = await getLiveData(location[0].Key);
             setLiveData(res.data)
         } catch (error) {
             console.log(error)
@@ -40,7 +40,7 @@ function WeatherWidget() {
     useEffect(() => {
         fetch5DaysData().catch(console.error)
         fetchLiveData().catch(console.error)
-    }, [location, metricSelection])
+    }, location)
 
 
     // Getting user input, return the most closely-matched version of city name
@@ -91,9 +91,9 @@ function WeatherWidget() {
 
 
             <Row gutter={{xs: 16, sm: 32, md: 48, lg: 64}} align="start">
-                <Col align="start">
-                    <p
-                        className="City">{location[0].LocalizedName ? <>{location[0].LocalizedName}</> : <>Melbourne</>} </p>
+                <Col align="end">
+                    <p className="City">{location[0].LocalizedName ? <>{location[0].LocalizedName}</> : <>Melbourne</>} </p>
+                    {/*{liveData[0] ?<p className="CurrentTemp"> {displayTemp(liveData[0].Temperature.Metric.Value,metricSelection)}</p> : <p></p>}*/}
                 </Col>
                 <Col span={10} align="start">
                     {liveData[0] ?
@@ -104,7 +104,6 @@ function WeatherWidget() {
                         <p>Wind Direction: {liveData[0].Wind.Direction.English}</p>
                         </div>
                         :<p></p>}
-
                 </Col>
             </Row>
 
@@ -116,11 +115,10 @@ function WeatherWidget() {
                             <Card size="small" bordered={false}
                                   title={handleTitle(i)}
                                   style={{width: 150}}
-                                  cover={<img src={`/icon/${item.Day.Icon}.svg`} alt="Weather that day"/>}>
-
+                                  cover={<img src={`/icon/${item.Day.Icon}.svg`} alt={item.Day.IconPhrase}/>}>
                                 <p>{item.Day.IconPhrase}</p>
-                                <p>High {item.Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</p>
-                                <p>Low {item.Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</p>
+                                <p>High {displayTemp(item.Temperature.Maximum.Value,metricSelection)}</p>
+                                <p>Low {displayTemp(item.Temperature.Minimum.Value,metricSelection)}</p>
                             </Card>
                         </Col>
                     )) : <p></p>}
