@@ -8,9 +8,9 @@ import {getClosestLocation, get5daysData, getLiveData} from "../utils/request";
 import {convertDate, displayTemp} from "../utils/UnitConversions";
 
 
-function WeatherWidget() {
-    const [location, setLocation] = useState([{Key: 26216}])
-    const [metricSelection, setMetricSelection] = useState(true)
+function WeatherWidget(initialLocationKey, initialLocationName, initialMetricSelection) {
+    const [location, setLocation] = useState([{Key: initialLocationKey, LocalizedName: "Melbourne"}])
+    const [metricSelection, setMetricSelection] = useState(initialMetricSelection)
     const [data, setData] = useState({})
     const [liveData, setLiveData] = useState({})
     const {Search} = Input;
@@ -74,6 +74,7 @@ function WeatherWidget() {
 
     return (
         <div className="WeatherWidget">
+            {/*<Space direction="vertical" align="center">*/}
             <Space direction="vertical" align="start">
                 <Search
                     placeholder="Location"
@@ -89,14 +90,13 @@ function WeatherWidget() {
                 </Radio.Group>
             </Space>
 
-
             <Row gutter={{xs: 16, sm: 32, md: 48, lg: 64}} align="start">
                 <Col align="end">
-                    <p className="City">{location[0].LocalizedName ? <>{location[0].LocalizedName}</> : <>Melbourne</>} </p>
+                    <p className="City">{ (location[0] && liveData[0]) ? <>{location[0].LocalizedName}</> : <></>} </p>
                     {/*{liveData[0] ?<p className="CurrentTemp"> {displayTemp(liveData[0].Temperature.Metric.Value,metricSelection)}</p> : <p></p>}*/}
                 </Col>
                 <Col span={10} align="start">
-                    {liveData[0] ?
+                    {(location[0] && liveData[0]) ?
                         <div>
                         <p>{liveData[0].LocalObservationDateTime.substring(0, 5) + convertDate(liveData[0].LocalObservationDateTime.substring(5, 10))}</p>
                         <p>{liveData[0].LocalObservationDateTime.substring(11, 16)}</p>
@@ -107,8 +107,6 @@ function WeatherWidget() {
                 </Col>
             </Row>
 
-
-            <>
                 <Row gutter={{xs: 8, sm: 16, md: 24, lg: 32}}>
                     {data.DailyForecasts ? data.DailyForecasts.map((item, i) => (
                         <Col key={i}>
@@ -123,7 +121,8 @@ function WeatherWidget() {
                         </Col>
                     )) : <p></p>}
                 </Row>
-            </>
+
+            {/*</Space>*/}
         </div>
     );
 }
