@@ -7,11 +7,11 @@ import axios from "axios";
 const getClosestLocation = (value) =>
     axios.get(`http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${config.api_key}&q=${value}`)
 
-const get5daysData = (locationID, metricSelection) =>
-    axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${locationID}?details=false&apikey=${config.api_key}&metric=${metricSelection}`)
+const get5daysData = (locationID) =>
+    axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/${locationID}?details=false&apikey=${config.api_key}&metric=true`)
 
-const getLiveData = (locationID, metricSelection) =>
-    axios.get(`http://dataservice.accuweather.com/currentconditions/v1/${locationID}?details=true&apikey=${config.api_key}&metric=${metricSelection}`)
+const getLiveData = (locationID) =>
+    axios.get(`http://dataservice.accuweather.com/currentconditions/v1/${locationID}?details=true&apikey=${config.api_key}&metric=true$`)
 
 
 
