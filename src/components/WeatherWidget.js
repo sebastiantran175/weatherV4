@@ -8,7 +8,7 @@ import "./WeatherWidget.css"
 // Each keys in this configuration file is good for 50 calls/ day due to the app being built with free AccuWeather API free tier.
 // Please change the API key to other keys if the page is not refreshing
 import config from '../config.json'
-
+import {getClosestLocation, get5daysData, getLiveData } from "./request";
 
 function WeatherWidget() {
     const [location, setLocation] = useState([{Key: 26216}])
@@ -37,30 +37,89 @@ function WeatherWidget() {
         return convertDict[monthDate.substring(0, 2)] + monthDate.substring(2, 5)
     })
 
+    const fetch5DaysData = async () => {
+        try {
+            const res = await get5daysData(location[0].Key, metricSelection);
+            setData(res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+    const fetchLiveData = async () => {
+        try {
+            const res = await getLiveData(location[0].Key, metricSelection);
+            setLiveData(res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    // const fetchLocation = async () => {
+    //     try {
+    //         const res = await getClosestLocation(location[0].Key, metricSelection);
+    //         setData(res.data)
+    //     } catch (error) {
+    //         console.log(error)
+    //         return false
+    //     }
+    // }
 
     // Refresh the render where there is a change in input
     useEffect(() => {
 
         // Getting 5 days forecasted data
-        let dataURL = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location[0].Key}?details=false&apikey=${config.api_key}&metric=${metricSelection}`
-        axios.get(dataURL)
-            .then((response) => {
-                setData(response.data)
-            }).catch((error) => {
-            console.log(error.toJSON)
-        })
+        // let dataURL = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${location[0].Key}?details=false&apikey=${config.api_key}&metric=${metricSelection}`
+        // axios.get(dataURL)
+        //     .then((response) => {
+        //         setData(response.data)
+        //     }).catch((error) => {
+        //     console.log(error.toJSON)
+        // })
+
+        // try {
+        //     const res = await get5daysData(location[0].Key, metricSelection);
+        //     setData(res.data)
+        // )} catch (error) {
+        //     console.log(error)
+        //     return false
+        // }
+
+        fetch5DaysData().catch(console.error)
+        fetchLiveData().catch(console.error)
+
 
         // Getting live data
-        let liveURL = `http://dataservice.accuweather.com/currentconditions/v1/${location[0].Key}?details=true&apikey=${config.api_key}&metric=${metricSelection}`
-        axios.get(liveURL).then((response) => {
-            setLiveData(response.data)
-        }).catch((error) => {
-            console.log(error.toJSON)
-        })
+        // let liveURL = `http://dataservice.accuweather.com/currentconditions/v1/${location[0].Key}?details=true&apikey=${config.api_key}&metric=${metricSelection}`
+        // axios.get(liveURL).then((response) => {
+        //     setLiveData(response.data)
+        // }).catch((error) => {
+        //     console.log(error.toJSON)
+        // })
+
     }, [location, metricSelection])
 
 
     // Getting user input, return the most closely-matched version of city name
+    // const onSearch = (value) => {
+    //     let locationURL = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${config.api_key}&q=${value}`
+    //     axios.get(locationURL)
+    //         .then((response) => {
+    //             setLocation(response.data)
+    //         }).catch((error) => {
+    //         console.log(error.toJSON)
+    //     })
+    // }
+
+    // const onSearch = async (value)) => {
+    //     try {
+    //         const res = await getClosestLocation()
+    //     }catch (error){
+    //         console.log(error)
+    //     }
+    // }
+
     const onSearch = (value) => {
         let locationURL = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${config.api_key}&q=${value}`
         axios.get(locationURL)
@@ -70,6 +129,7 @@ function WeatherWidget() {
             console.log(error.toJSON)
         })
     }
+
 
     // Change Metric/ Imperial Unit Selection
     const onChangeRadio = (e) => {
@@ -101,7 +161,8 @@ function WeatherWidget() {
                     <p
                         className="City">{location[0].LocalizedName ? <>{location[0].LocalizedName}</> : <>Melbourne</>} </p>
                 </Col>
-                <Col xs={2} sm={4} md={6} lg={8} xl={10} align="start">
+                <Col span={10} align="start">
+                    {/*<Col xs={2} sm={4} md={6} lg={8} xl={10} align="start">*/}
                     <p>{liveData[0] ?
                         <p>{liveData[0].LocalObservationDateTime.substring(0, 5) + convertDate(liveData[0].LocalObservationDateTime.substring(5, 10))}</p> :
                         <p></p>}</p>
@@ -124,8 +185,10 @@ function WeatherWidget() {
                                        alt="Weather that day"/> : null}>
 
                             {data.DailyForecasts ? <p>{data.DailyForecasts[0].Day.IconPhrase}</p> : null}
-                            {data.DailyForecasts ? <p>High {data.DailyForecasts[0].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
-                            {data.DailyForecasts ? <p>Low {data.DailyForecasts[0].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
+                            {data.DailyForecasts ?
+                                <p>High {data.DailyForecasts[0].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
+                            {data.DailyForecasts ?
+                                <p>Low {data.DailyForecasts[0].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
                         </Card>
                     </Col>
 
@@ -137,8 +200,10 @@ function WeatherWidget() {
                                        alt="Weather that day"/> : null}>
 
                             {data.DailyForecasts ? <p>{data.DailyForecasts[1].Day.IconPhrase}</p> : null}
-                            {data.DailyForecasts ? <p>High {data.DailyForecasts[1].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
-                            {data.DailyForecasts ? <p>Low {data.DailyForecasts[1].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
+                            {data.DailyForecasts ?
+                                <p>High {data.DailyForecasts[1].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
+                            {data.DailyForecasts ?
+                                <p>Low {data.DailyForecasts[1].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
                         </Card>
                     </Col>
 
@@ -151,8 +216,10 @@ function WeatherWidget() {
                                        alt="Weather that day"/> : null}>
 
                             {data.DailyForecasts ? <p>{data.DailyForecasts[2].Day.IconPhrase}</p> : null}
-                            {data.DailyForecasts ? <p>High {data.DailyForecasts[2].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
-                            {data.DailyForecasts ? <p>Low {data.DailyForecasts[2].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
+                            {data.DailyForecasts ?
+                                <p>High {data.DailyForecasts[2].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
+                            {data.DailyForecasts ?
+                                <p>Low {data.DailyForecasts[2].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
                         </Card>
                     </Col>
 
@@ -165,8 +232,10 @@ function WeatherWidget() {
                                        alt="Weather that day"/> : null}>
 
                             {data.DailyForecasts ? <p>{data.DailyForecasts[3].Day.IconPhrase}</p> : null}
-                            {data.DailyForecasts ? <p>High {data.DailyForecasts[3].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
-                            {data.DailyForecasts ? <p>Low {data.DailyForecasts[3].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
+                            {data.DailyForecasts ?
+                                <p>High {data.DailyForecasts[3].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
+                            {data.DailyForecasts ?
+                                <p>Low {data.DailyForecasts[3].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
                         </Card>
                     </Col>
 
@@ -179,8 +248,10 @@ function WeatherWidget() {
                                        alt="Weather that day"/> : null}>
 
                             {data.DailyForecasts ? <p>{data.DailyForecasts[4].Day.IconPhrase}</p> : null}
-                            {data.DailyForecasts ? <p>High {data.DailyForecasts[4].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
-                            {data.DailyForecasts ? <p>Low {data.DailyForecasts[4].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
+                            {data.DailyForecasts ?
+                                <p>High {data.DailyForecasts[4].Temperature.Maximum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
+                            {data.DailyForecasts ?
+                                <p>Low {data.DailyForecasts[4].Temperature.Minimum.Value}°{metricSelection ? <>C</> : <>F</>}</p> : null}
                         </Card>
                     </Col>
                 </Row>

@@ -1,6 +1,6 @@
 import {render, screen} from "@testing-library/react";
 import '@testing-library/jest-dom'
-import WeatherWidget from "../WeatherWidget";
+import WeatherWidget from "../components/WeatherWidget";
 
 
 // Mock Window Element
