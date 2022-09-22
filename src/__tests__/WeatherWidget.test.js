@@ -1,7 +1,6 @@
 import {render, screen} from "@testing-library/react";
 import '@testing-library/jest-dom'
 import WeatherWidget from "../components/WeatherWidget";
-import WeatherWidgetDemoPage from "../WeatherWidgetDemoPage";
 
 const mockData = {
     "location": [
@@ -577,12 +576,8 @@ const mockData = {
     "metricSelection": true
 };
 
-
-
-// Test that the page can be initialised upon render
-test('Component Render', () => {
-
-    // Mock Window Element
+// Mock Window before running each test for rendering
+beforeEach(() => {
     Object.defineProperty(window, 'matchMedia', {
         writable: true,
         value: jest.fn().mockImplementation(query => ({
@@ -595,9 +590,35 @@ test('Component Render', () => {
             removeEventListener: jest.fn(),
             dispatchEvent: jest.fn(),
         })),
-    });
+    });;
+});
 
+
+// Test that the page can be initialised upon render
+test('Component Basic Render', () => {
     render(<WeatherWidget/>);
     const linkElement = screen.getByText("Search");
     expect(linkElement).toBeInTheDocument();
 });
+
+
+test('Blank Inputs does not break website', () => {
+    render(<WeatherWidget
+        initialLocationKey={null}
+        initialLocationName={null}
+        initialMetricSelection={null}/>);
+    const linkElement = screen.getByText("Search");
+    expect(linkElement).toBeInTheDocument();
+});
+
+
+test('Randomly Generated Inputs does not break website', () => {
+    render(<WeatherWidget
+        initialLocationKey={null}
+        initialLocationName={"ad afdhajdlakdjasdajskldjakldjklasjd"}
+        initialMetricSelection={null}/>);
+    const linkElement = screen.getByText("Search");
+    expect(linkElement).toBeInTheDocument();
+});
+
+
