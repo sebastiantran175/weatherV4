@@ -6,7 +6,7 @@
 ## Important config.json details
 There are 5 keys inside the config.json file, each key is good for 50 calls/ day. If the page is not refreshing, please change the api_key value to other keys.
 
-The widget shows the forecast for 5 days instead of 7 days as the free tier of the most weather APIs currently only allows for maximum 5 days. OpenWeather API was used in this case.
+The widget shows the forecast for 5 days instead of 7 days as the free tier of the most weather APIs currently only allows for maximum 5 days. 
 
 ## Accessibility Features
 <ul>
