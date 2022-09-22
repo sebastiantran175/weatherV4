@@ -8,8 +8,8 @@ import {getClosestLocation, get5daysData, getLiveData} from "../utils/request";
 import {convertDate, displayTemp} from "../utils/UnitConversions";
 
 
-function WeatherWidget(initialLocationKey, initialLocationName, initialMetricSelection) {
-    const [location, setLocation] = useState([{Key: initialLocationKey, LocalizedName: "Melbourne"}])
+function WeatherWidget({initialLocationKey, initialLocationName, initialMetricSelection}) {
+    const [location, setLocation] = useState([{Key: initialLocationKey, LocalizedName: initialLocationName}])
     const [metricSelection, setMetricSelection] = useState(initialMetricSelection)
     const [data, setData] = useState({})
     const [liveData, setLiveData] = useState({})
@@ -74,7 +74,6 @@ function WeatherWidget(initialLocationKey, initialLocationName, initialMetricSel
 
     return (
         <div className="WeatherWidget">
-            {/*<Space direction="vertical" align="center">*/}
             <Space direction="vertical" align="start">
                 <Search
                     placeholder="Location"
@@ -93,17 +92,17 @@ function WeatherWidget(initialLocationKey, initialLocationName, initialMetricSel
             <Row gutter={{xs: 16, sm: 32, md: 48, lg: 64}} align="start">
                 <Col align="end">
                     <p className="City">{ (location[0] && liveData[0]) ? <>{location[0].LocalizedName}</> : <></>} </p>
-                    {/*{liveData[0] ?<p className="CurrentTemp"> {displayTemp(liveData[0].Temperature.Metric.Value,metricSelection)}</p> : <p></p>}*/}
+                    {liveData[0] ?<p className="CurrentTemp"> {displayTemp(liveData[0].Temperature.Metric.Value,metricSelection)}</p> : null}
                 </Col>
                 <Col span={10} align="start">
                     {(location[0] && liveData[0]) ?
                         <div>
                         <p>{liveData[0].LocalObservationDateTime.substring(0, 5) + convertDate(liveData[0].LocalObservationDateTime.substring(5, 10))}</p>
                         <p>{liveData[0].LocalObservationDateTime.substring(11, 16)}</p>
-                        <p>Humidity: {liveData[0].RelativeHumidity}</p>
+                        <p>Humidity: {liveData[0].RelativeHumidity}%</p>
                         <p>Wind Direction: {liveData[0].Wind.Direction.English}</p>
                         </div>
-                        :<p></p>}
+                        :null}
                 </Col>
             </Row>
 
@@ -119,10 +118,8 @@ function WeatherWidget(initialLocationKey, initialLocationName, initialMetricSel
                                 <p>Low {displayTemp(item.Temperature.Minimum.Value,metricSelection)}</p>
                             </Card>
                         </Col>
-                    )) : <p></p>}
+                    )) : null}
                 </Row>
-
-            {/*</Space>*/}
         </div>
     );
 }
