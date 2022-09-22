@@ -1,4 +1,6 @@
 
+![Alt Text](public/ChooseLocation.gif)
+
 ## Important config.json details
 There are 4 keys inside the config.json file, as each key is good for 50 calls/ day
 if the page is not refreshing, please change the api_key value to other keys
@@ -16,8 +18,10 @@ To start the app
 To run the test suit
 
 ## API documentations 
-Refer to /src/docs files
+Refer to /src/docs files.
 
+Due to a recent change in the weather APIs, the industry standard for free tier is non longer 7 days.
+The widget show the forecasts for 5 days instead.
 
 
 ## Accessibility Features
